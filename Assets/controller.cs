@@ -8,7 +8,8 @@ public class controller : MonoBehaviour
     NavMeshAgent agent;
     [SerializeField] GameObject particle;
     [SerializeField] GameObject ammo;
-    [SerializeField] float speed = 5;
+    [SerializeField] float ammoSpeed = 5;
+    [SerializeField] float rotationSpeed = 5;
     Vector3 diff; 
     void Start()
     {
@@ -16,25 +17,28 @@ public class controller : MonoBehaviour
         diff = Camera.main.transform.position - transform.position;
     }
     [SerializeField] float scrollSpeed = 1;
+    Vector3 movement;
+    public DynamicJoystick dynamicJoystick;
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        //keyboard
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticalInput = Input.GetAxisRaw("Vertical");
+        transform.Rotate(new Vector3(0, horizontalInput * rotationSpeed));
+        transform.Translate(Vector3.forward * verticalInput * agent.speed * Time.deltaTime);
+        
+        //joystick
+        float _verticalInput = dynamicJoystick.Vertical;
+        float _horizantalInput = dynamicJoystick.Horizontal;
+        transform.Rotate(new Vector3(0, _horizantalInput * rotationSpeed));
+        transform.Translate(Vector3.forward * _verticalInput * agent.speed * Time.deltaTime);
+        //transform.Translate(Vector3.forward * _verticalInput * agent.speed * Time.deltaTime);
+        //agent.Move(movement * Time.deltaTime * agent.speed);
+        //agent.SetDestination(transform.position + movement);
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            RaycastHit hit;
-            
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100))
-            {
-                agent.destination = hit.point;
-            }
-        }else if (Input.GetMouseButtonDown(1))
-        {
-            GameObject efekt = GameObject.Instantiate(particle, transform);
-            efekt.transform.localPosition = transform.GetChild(0).localPosition;
-            GameObject _ammo = Instantiate(ammo, transform.GetChild(0));
-            _ammo.SetActive(true);
-            _ammo.transform.position = ammo.transform.position;
-            _ammo.GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * speed);
-            _ammo.transform.parent = null;
+            Fire();
         }
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
@@ -57,5 +61,16 @@ public class controller : MonoBehaviour
     {
         Camera camera = Camera.main;
         camera.transform.position = Vector3.Lerp(camera.transform.position, transform.position + diff, Time.deltaTime * camSpeed);
+    }
+
+    public void Fire()
+    {
+        GameObject efekt = GameObject.Instantiate(particle, transform);
+        efekt.transform.localPosition = transform.GetChild(0).localPosition;
+        GameObject _ammo = Instantiate(ammo, transform.GetChild(0));
+        _ammo.SetActive(true);
+        _ammo.transform.position = ammo.transform.position;
+        _ammo.GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * ammoSpeed);
+        _ammo.transform.parent = null;
     }
 }

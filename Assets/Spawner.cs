@@ -13,16 +13,11 @@ public class Spawner : MonoBehaviour
         StartCoroutine(Fade());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     IEnumerator Fade()
     {
         yield return new WaitForSeconds(perSecond);
         Instantiate(enemy);
+        enemy.transform.position = new Vector3(transform.position.x, enemy.transform.position.y, transform.position.z);
         StartCoroutine(Fade());
     }
 }

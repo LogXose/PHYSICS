@@ -22,6 +22,9 @@ public class Ammo : MonoBehaviour
         if (collision.collider.CompareTag("Enemy"))
         {
             collision.collider.GetComponent<Enemy>().Shooted(); 
+        }else if (collision.collider.CompareTag("Spawner"))
+        {
+            collision.collider.GetComponent<Spawner>().Shooted();
         }
     }
 }

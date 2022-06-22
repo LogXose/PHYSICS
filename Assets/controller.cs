@@ -11,7 +11,6 @@ public class controller : MonoBehaviour
     [SerializeField] GameObject ammo;
     [SerializeField] float ammoSpeed = 5;
     [SerializeField] float rotationSpeed = 5;
-    Vector3 diff;
     public float health = 100;
     public const float maxHealth = 100;
     public const float minHealth = 0;
@@ -20,12 +19,10 @@ public class controller : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        diff = Camera.main.transform.position - transform.position;
     }
 
     
     [SerializeField] float scrollSpeed = 1;
-    Vector3 movement;
     public DynamicJoystick dynamicJoystick;
     void Update()
     {
@@ -96,22 +93,24 @@ public class controller : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.collider.transform.localScale.magnitude);
         if (collision.collider.CompareTag("Loot"))
         {
             IncreaseHealth(collision.collider.transform.localScale.magnitude);
             Destroy(collision.collider.gameObject);
-        }else if (collision.collider.CompareTag("Enemy"))
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Enemy"))
         {
-            collision.collider.GetComponent<Enemy>().Shooted();
-            collision.collider.GetComponent<Enemy>().Shooted();
-            collision.collider.GetComponent<Enemy>().Shooted();
-            collision.collider.GetComponent<Enemy>().Shooted();
-            collision.collider.GetComponent<Enemy>().Shooted();
+            other.gameObject.GetComponent<Enemy>().Shooted();
+            other.gameObject.GetComponent<Enemy>().Shooted();
+            other.gameObject.GetComponent<Enemy>().Shooted();
+            other.gameObject.GetComponent<Enemy>().Shooted();
+            other.gameObject.GetComponent<Enemy>().Shooted();
             DecreaseHealth(maxHealth / 2);
         }
     }
-
     public void IncreaseHealth(float amount)
     {
         health += amount;
@@ -129,6 +128,7 @@ public class controller : MonoBehaviour
     public void ArrangeScale()
     {
         float ratio = health / maxHealth;
+        ratio = (ratio + 1f) / 2f;
         transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * ratio, Time.deltaTime * 5f);
     }
 

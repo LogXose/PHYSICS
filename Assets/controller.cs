@@ -31,7 +31,6 @@ public class controller : MonoBehaviour
         Movement();
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(health > ammoValue)
             Fire();
         }
         Scrolling();
@@ -43,7 +42,7 @@ public class controller : MonoBehaviour
         //keyboard
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
-        transform.Rotate(new Vector3(0, horizontalInput * rotationSpeed));
+        transform.Rotate(new Vector3(0, horizontalInput * rotationSpeed / 10));
         transform.Translate(Vector3.forward * verticalInput * agent.speed * Time.deltaTime);
 
         //joystick
@@ -81,14 +80,17 @@ public class controller : MonoBehaviour
 
     public void Fire()
     {
-        GameObject efekt = GameObject.Instantiate(particle, transform);
-        efekt.transform.localPosition = transform.GetChild(0).localPosition;
-        GameObject _ammo = Instantiate(ammo, transform.GetChild(0));
-        _ammo.SetActive(true);
-        _ammo.transform.position = ammo.transform.position;
-        _ammo.GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * ammoSpeed);
-        _ammo.transform.parent = null;
-        DecreaseHealth(ammoValue);
+        if (health > ammoValue)
+        {
+            GameObject efekt = GameObject.Instantiate(particle, transform);
+            efekt.transform.localPosition = transform.GetChild(0).localPosition;
+            GameObject _ammo = Instantiate(ammo, transform.GetChild(0));
+            _ammo.SetActive(true);
+            _ammo.transform.position = ammo.transform.position;
+            _ammo.GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * ammoSpeed);
+            _ammo.transform.parent = null;
+            DecreaseHealth(ammoValue);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
